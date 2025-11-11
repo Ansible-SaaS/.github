@@ -2,7 +2,7 @@
 
 ## GITHUB Pull Requests
 
-The template https://github.com/Ansible-SaaS/.github/blob/main/.github/PULL_REQUEST_TEMPLATE.md must be used to create pull requests.
+The template @.github/PULL_REQUEST_TEMPLATE.md must be used to create pull requests.
 The PR must be created as draft.
 
 ## JIRA
@@ -215,5 +215,5 @@ h3. *Supporting documentation*
 
 The following Standard Operating Procedures (SOPs) documentation provides important information about the Ansible SaaS platform:
 
-@../ansible-saas-sops/README.md
+[Ansible-SaaS SOPS Index](https://github.com/Ansible-SaaS/ansible-saas-sops/blob/main/README.md)
 
