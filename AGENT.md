@@ -105,24 +105,36 @@ To add a comment to an existing JIRA issue, use the `jira issue comment add` com
 # Simple comment with internal flag (REQUIRED)
 jira issue comment add AAP-12345 "This is a simple comment" --internal
 
-# Multi-line comment using heredoc
+# RECOMMENDED: Using a template file for complex/long comments with JIRA markup
+# This approach is more reliable and avoids timeout issues
+cat > /tmp/comment.txt << 'EOF'
+h3. Section Header
+
+Content of the comment with {{inline code}}.
+
+{code:bash}
+code block example
+{code}
+
+* Bullet points
+* Work well too
+EOF
+jira issue comment add AAP-12345 --template /tmp/comment.txt --internal --no-input
+
+# AVOID: Heredoc with command substitution for long comments (can timeout)
+# This may work for short comments but often times out with complex JIRA markup
 jira issue comment add AAP-12345 "$(cat <<'EOF'
 This is a multi-line comment.
-
 It can contain multiple paragraphs.
 EOF
 )" --internal
-
-# Using a template file
-cat > /tmp/comment.txt << 'EOF'
-## Section Header
-
-Content of the comment...
-EOF
-jira issue comment add AAP-12345 --template /tmp/comment.txt --internal --no-input
 ```
 
-Note: Use JIRA markup syntax in comments (e.g., `*bold*`, `_italic_`, `{code:java}...{code}`)
+**Important Notes:**
+- Use JIRA markup syntax in comments (e.g., `*bold*`, `_italic_`, `{code:java}...{code}`, `h3.` for headers)
+- **For comments with JIRA markup or longer than a few lines, ALWAYS use the `--template` file approach**
+- Heredoc comments with complex JIRA markup frequently timeout (3+ minutes)
+- File-based comments complete successfully and quickly
 
 #### Updating Issue Descriptions
 
