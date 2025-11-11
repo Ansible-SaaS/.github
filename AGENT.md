@@ -1,5 +1,36 @@
 # General instructions
 
+## Git Workflow
+
+**IMPORTANT**: Never commit directly to the `main` branch. Always create a feature branch before making any commits.
+
+### Creating Branches and Pull Requests
+
+1. **Create a branch** before making any changes:
+   ```bash
+   git checkout -b <JIRA-KEY>-<short-description>
+   ```
+   Example: `git checkout -b AAP-12345-fix-validation`
+
+2. **Make your changes** and commit them to the branch
+
+3. **Push the branch** to remote:
+   ```bash
+   git push -u origin <branch-name>
+   ```
+
+4. **Create a draft PR** using the template from @.github/PULL_REQUEST_TEMPLATE.md
+
+### Branch Naming Convention
+
+Format: `<JIRA-KEY>-<short-description>`
+- Use lowercase with hyphens
+- Keep the description concise but meaningful
+- Examples:
+  - `AAP-53659-keep-reason-debugging`
+  - `AAP-57911-instance-name-validation`
+  - `AAP-12345-fix-subscription-status`
+
 ## GITHUB Pull Requests
 
 The template @.github/PULL_REQUEST_TEMPLATE.md must be used to create pull requests.
