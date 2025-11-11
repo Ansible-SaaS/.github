@@ -76,7 +76,7 @@ jira issue edit AAP-57911 --no-input --custom git-pull-request="https://github.c
 When creating or editing issues, use the `--custom` flag with the field name in lowercase with dashes:
 
 ```bash
-# Creating a new issue with acceptance criteria and security restriction
+# Creating a simple issue (short body)
 jira issue create --type Story --project AAP --parent AAP-12345 \
   --priority Major \
   --summary "Issue summary" \
@@ -89,13 +89,47 @@ jira issue create --type Story --project AAP --parent AAP-12345 \
   --body "h3. *User Story*
 ..."
 
+# RECOMMENDED: Creating an issue with complex JIRA markup using --template
+# This approach is more reliable and avoids timeout issues with complex body text
+cat > /tmp/issue-body.txt << 'EOF'
+*Description*
+
+This is the issue description with JIRA markup.
+
+*Steps to Reproduce*
+
+1. Step one
+2. Step two
+
+{code:bash}
+example command
+{code}
+
+*Expected Behavior*
+
+What should happen
+EOF
+jira issue create --type Bug --project AAP \
+  --priority Major \
+  --summary "Issue summary" \
+  --component ansible-saas \
+  --custom workstream=SaaS \
+  --custom acceptance-criteria="- Acceptance criterion" \
+  --affects-version ansible-saas-ga \
+  --template /tmp/issue-body.txt \
+  --no-input
+
 # Editing an existing issue to set acceptance criteria
 jira issue edit AAP-12345 --no-input \
   --custom acceptance-criteria="- Updated criterion 1
 - Updated criterion 2"
 ```
 
-Note: The value should be enclosed in quotes, especially when it contains multiple lines or special characters.
+**Important Notes:**
+- For issue bodies with complex JIRA markup or multiple lines, use the `--template` file approach
+- The `--template` approach is more reliable than inline `--body` for complex content
+- Simple, short bodies can still use inline `--body "..."`
+- Always test by viewing the created issue: `jira issue view AAP-XXXXX`
 
 #### Adding Comments to JIRA Issues
 
