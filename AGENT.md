@@ -36,6 +36,12 @@ Format: `<JIRA-KEY>-<short-description>`
 The template @.github/PULL_REQUEST_TEMPLATE.md must be used to create pull requests.
 The PR must be created as draft.
 
+### AI Assistant Attribution
+
+When creating pull requests, the `Assisted-by: <name of code assistant>` field in the PR description must be updated with the name of the code assistant used (e.g., "Cursor AI", "GitHub Copilot", "Claude", etc.).
+
+**Note**: Use the `Assisted-by:` tag instead of `Co-Authored-by:` for AI assistant attribution.
+
 ## JIRA
 
 Use the `jira` CLI to create new issue.
