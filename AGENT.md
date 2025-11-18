@@ -28,6 +28,29 @@
 
 5. **Create a draft PR** using the template from @.github/PULL_REQUEST_TEMPLATE.md
 
+### Commit Message Format
+
+When creating commits, follow this format:
+
+```bash
+git commit -m "$(cat <<'EOF'
+Brief summary of changes (imperative mood, < 50 chars)
+
+More detailed explanation if needed. Explain what and why, not how.
+- Bullet points are acceptable
+- Use present tense
+
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>
+EOF
+)"
+```
+
+**IMPORTANT**:
+- All commits made with AI assistance MUST include the `Co-Authored-By` field (GitHub standard)
+- Format: `Co-Authored-By: <Name> <email>` (e.g., `Co-Authored-By: Claude <noreply@anthropic.com>`)
+
 ### Updating Existing Pull Requests
 
 **IMPORTANT**: When pushing additional commits to a branch that already has an open PR, you MUST update the PR to reflect the changes:
@@ -48,7 +71,7 @@ You can update the PR using the GitHub CLI:
 gh pr edit <PR-NUMBER> --title "Updated title reflecting all changes"
 
 # Update PR body (use a file for complex updates)
-# IMPORTANT: Maintain the template structure
+# IMPORTANT: Maintain the template structure and include Assisted-by field
 gh pr edit <PR-NUMBER> --body "$(cat <<'EOF'
 Jira Issue: <https://issues.redhat.com/browse/AAP-NNNN>
 
@@ -70,9 +93,16 @@ Jira Issue: <https://issues.redhat.com/browse/AAP-NNNN>
 ## Deployment considerations
 - [ ] This code change is ready for deployment on its own
 - [ ] This code change requires the following considerations before being deployed:
+
+---
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+Assisted-by: Claude
 EOF
 )"
 ```
+
+**IMPORTANT**: All PRs created with AI assistance MUST include the `Assisted-by:` field at the end of the PR description.
 
 ### Branch Naming Convention
 
@@ -88,6 +118,14 @@ Format: `<JIRA-KEY>-<short-description>`
 
 The template @.github/PULL_REQUEST_TEMPLATE.md must be used to create pull requests.
 The PR must be created as draft.
+
+**IMPORTANT**: All PRs created with AI assistance MUST include the `Assisted-by:` field at the end of the PR description:
+```
+---
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+Assisted-by: Claude
+```
 
 ## JIRA
 
