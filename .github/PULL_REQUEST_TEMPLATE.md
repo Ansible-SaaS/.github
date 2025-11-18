@@ -4,6 +4,8 @@ Jira Issue: <https://issues.redhat.com/browse/AAP-NNNN>
 
 ## Description
 <!-- Describe the changes introduced in the PR below, including any relevant motivation, context, and technical/design decisions -->
+<!-- If you use any AI tool then provide that information here. The code assistant that you used, elaborating on how it was used.  -->
+Assisted-by: <name of code assistant>
 
 ## Testing
 <!-- Describe the testing process in a set of steps, including any relevant configuration, etc. If testing is not applicable, remove the steps and add a statement explaining why testing isn't applicable. -->

@@ -119,24 +119,29 @@ Format: `<JIRA-KEY>-<short-description>`
 The template @.github/PULL_REQUEST_TEMPLATE.md must be used to create pull requests.
 The PR must be created as draft.
 
-**IMPORTANT**: All PRs created with AI assistance MUST include the `Assisted-by:` field at the end of the PR description:
-```
----
-🤖 Generated with [Claude Code](https://claude.com/claude-code)
+### AI Assistant Attribution
 
-Assisted-by: Claude
-```
+When creating pull requests, the `Assisted-by: <name of code assistant>` field in the PR description must be updated with the name of the code assistant used (e.g., "Cursor AI", "GitHub Copilot", "Claude", etc.).
+
+**Note**: Use the `Assisted-by:` tag instead of `Co-Authored-by:` for AI assistant attribution.
 
 ## JIRA
 
 Use the `jira` CLI to create new issue.
+
 For each created issue, the priority must be set (Critical, Major, Normal, Minor ), if it is not provided, you must ask for it.
+
 The workstream must be set to 'SaaS'.
+
 The component must be 'ansible-saas'.
+
 The custom field 'acceptance-criteria' is a mandatory field and so must be set.
+
 **IMPORTANT**: All issues MUST have their visibility restricted to "Red Hat Employee". Note: The `--custom security="Red Hat Employee"` flag is not currently supported by the jira CLI, so this must be set manually in the JIRA web interface after creation.
+
 **IMPORTANT**: All comments MUST be restricted to Red Hat employees using the `--internal` flag.
-**IMPORTANT**: For Bug type issues, the affected version MUST be set to "ansible-saas-ga" using `--affects-version ansible-saas-ga`.
+
+**IMPORTANT**: For Bug type issues, the affected version MUST be set to "ansible-saas-ga" using `--affects-version ansible-saas-ga` (note: use `--affects-version` plural, NOT `--affected-version` or `--custom affected-version`).
 
 ### Linking Pull Requests to JIRA Issues
 
