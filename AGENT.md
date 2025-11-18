@@ -45,13 +45,20 @@ When creating pull requests, the `Assisted-by: <name of code assistant>` field i
 ## JIRA
 
 Use the `jira` CLI to create new issue.
+
 For each created issue, the priority must be set (Critical, Major, Normal, Minor ), if it is not provided, you must ask for it.
+
 The workstream must be set to 'SaaS'.
+
 The component must be 'ansible-saas'.
+
 The custom field 'acceptance-criteria' is a mandatory field and so must be set.
+
 **IMPORTANT**: All issues MUST have their visibility restricted to "Red Hat Employee". Note: The `--custom security="Red Hat Employee"` flag is not currently supported by the jira CLI, so this must be set manually in the JIRA web interface after creation.
+
 **IMPORTANT**: All comments MUST be restricted to Red Hat employees using the `--internal` flag.
-**IMPORTANT**: For Bug type issues, the affected version MUST be set to "ansible-saas-ga" using `--affects-version ansible-saas-ga`.
+
+**IMPORTANT**: For Bug type issues, the affected version MUST be set to "ansible-saas-ga" using `--affects-version ansible-saas-ga` (note: use `--affects-version` plural, NOT `--affected-version` or `--custom affected-version`).
 
 ### Linking Pull Requests to JIRA Issues
 
