@@ -6,20 +6,73 @@
 
 ### Creating Branches and Pull Requests
 
-1. **Create a branch** before making any changes:
+1. **Update main branch** before creating a new branch:
+   ```bash
+   git checkout main
+   git pull origin main
+   ```
+   **IMPORTANT**: Always ensure your main branch is up-to-date before creating a new feature branch.
+
+2. **Create a branch** from the updated main branch:
    ```bash
    git checkout -b <JIRA-KEY>-<short-description>
    ```
    Example: `git checkout -b AAP-12345-fix-validation`
 
-2. **Make your changes** and commit them to the branch
+3. **Make your changes** and commit them to the branch
 
-3. **Push the branch** to remote:
+4. **Push the branch** to remote:
    ```bash
    git push -u origin <branch-name>
    ```
 
-4. **Create a draft PR** using the template from @.github/PULL_REQUEST_TEMPLATE.md
+5. **Create a draft PR** using the template from @.github/PULL_REQUEST_TEMPLATE.md
+
+### Updating Existing Pull Requests
+
+**IMPORTANT**: When pushing additional commits to a branch that already has an open PR, you MUST update the PR to reflect the changes:
+
+1. **Update the PR title** if the scope or focus of the changes has evolved
+2. **Update the PR body** to document what functionality was:
+   - Added (new features or capabilities)
+   - Changed (modifications to existing functionality)
+   - Deleted (removed features or code)
+
+**The PR body MUST continue to follow the template structure** from [PULL_REQUEST_TEMPLATE.md](https://github.com/Ansible-SaaS/.github/blob/main/.github/PULL_REQUEST_TEMPLATE.md).
+
+This ensures reviewers have a clear understanding of all changes in the PR without having to parse through individual commits.
+
+You can update the PR using the GitHub CLI:
+```bash
+# Update PR title
+gh pr edit <PR-NUMBER> --title "Updated title reflecting all changes"
+
+# Update PR body (use a file for complex updates)
+# IMPORTANT: Maintain the template structure
+gh pr edit <PR-NUMBER> --body "$(cat <<'EOF'
+Jira Issue: <https://issues.redhat.com/browse/AAP-NNNN>
+
+## Description
+- Added: New validation for instance names
+- Changed: Refactored error handling in subscription service
+- Deleted: Deprecated legacy API endpoints
+
+[Additional context about the changes]
+
+## Testing
+### Steps to test
+1. Pull down the PR
+2. ...
+
+### Scenarios tested
+[Describe tested scenarios]
+
+## Deployment considerations
+- [ ] This code change is ready for deployment on its own
+- [ ] This code change requires the following considerations before being deployed:
+EOF
+)"
+```
 
 ### Branch Naming Convention
 
