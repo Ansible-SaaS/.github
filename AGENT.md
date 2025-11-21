@@ -52,6 +52,27 @@ export GITLAB_TOKEN="your-gitlab-token"
 glab auth login --hostname gitlab.cee.redhat.com --token $GITLAB_TOKEN
 ```
 
+**Authenticating to Internal GitLab:**
+
+For Red Hat's internal GitLab instance, you may need to use the full authentication command:
+
+```bash
+# Full authentication with explicit parameters
+glab auth login --hostname gitlab.cee.redhat.com \
+  --api-host gitlab.cee.redhat.com \
+  --api-protocol https \
+  --git-protocol git \
+  -t $GITLAB_TOKEN
+```
+
+**Note**: To determine the correct git-protocol to use:
+```bash
+# Check the remote URL format
+git remote -v
+```
+- If the remote uses `git@gitlab.cee.redhat.com:...`, use `--git-protocol git`
+- If the remote uses `https://gitlab.cee.redhat.com/...`, use `--git-protocol https`
+
 **Creating a Merge Request:**
 ```bash
 glab mr create --draft --title "Title" --description "$(cat <<'EOF'
