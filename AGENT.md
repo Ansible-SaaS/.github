@@ -26,7 +26,89 @@
    git push -u origin <branch-name>
    ```
 
-5. **Create a draft PR** using the template from @.github/PULL_REQUEST_TEMPLATE.md
+5. **Create a draft PR/MR** using the template from @.github/PULL_REQUEST_TEMPLATE.md
+   - For GitHub repositories: Use `gh` CLI
+   - For GitLab repositories: Use `glab` CLI
+
+### Creating Pull/Merge Requests
+
+#### For GitLab Repositories (using glab)
+
+**Installation:**
+```bash
+# macOS
+brew install glab
+
+# Other platforms: https://gitlab.com/gitlab-org/cli/-/releases
+```
+
+**Authentication:**
+```bash
+# Interactive authentication
+glab auth login --hostname gitlab.cee.redhat.com
+
+# Or with a token
+export GITLAB_TOKEN="your-gitlab-token"
+glab auth login --hostname gitlab.cee.redhat.com --token $GITLAB_TOKEN
+```
+
+**Authenticating to Internal GitLab:**
+
+For Red Hat's internal GitLab instance, you may need to use the full authentication command:
+
+```bash
+# Full authentication with explicit parameters
+glab auth login --hostname gitlab.cee.redhat.com \
+  --api-host gitlab.cee.redhat.com \
+  --api-protocol https \
+  --git-protocol git \
+  -t $GITLAB_TOKEN
+```
+
+**Note**: To determine the correct git-protocol to use:
+```bash
+# Check the remote URL format
+git remote -v
+```
+- If the remote uses `git@gitlab.cee.redhat.com:...`, use `--git-protocol git`
+- If the remote uses `https://gitlab.cee.redhat.com/...`, use `--git-protocol https`
+
+**Creating a Merge Request:**
+```bash
+glab mr create --draft --title "Title" --description "$(cat <<'EOF'
+Jira Issue: <https://issues.redhat.com/browse/AAP-NNNN>
+
+## Description
+...
+
+## Testing
+...
+
+## Deployment considerations
+...
+
+---
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+Assisted-by: Claude
+EOF
+)"
+```
+
+**Note**: To create a personal access token for GitLab:
+1. Go to GitLab Settings > Access Tokens
+2. Create a token with `api` scope
+3. Save the token securely
+
+#### For GitHub Repositories (using gh)
+
+**Creating a Pull Request:**
+```bash
+gh pr create --draft --title "Title" --body "$(cat <<'EOF'
+...
+EOF
+)"
+```
 
 ### Commit Message Format
 
@@ -51,28 +133,28 @@ EOF
 - All commits made with AI assistance MUST include the `Co-Authored-By` field (GitHub standard)
 - Format: `Co-Authored-By: <Name> <email>` (e.g., `Co-Authored-By: Claude <noreply@anthropic.com>`)
 
-### Updating Existing Pull Requests
+### Updating Existing Pull/Merge Requests
 
-**IMPORTANT**: When pushing additional commits to a branch that already has an open PR, you MUST update the PR to reflect the changes:
+**IMPORTANT**: When pushing additional commits to a branch that already has an open PR/MR, you MUST update it to reflect the changes:
 
-1. **Update the PR title** if the scope or focus of the changes has evolved
-2. **Update the PR body** to document what functionality was:
+1. **Update the PR/MR title** if the scope or focus of the changes has evolved
+2. **Update the PR/MR body** to document what functionality was:
    - Added (new features or capabilities)
    - Changed (modifications to existing functionality)
    - Deleted (removed features or code)
 
-**The PR body MUST continue to follow the template structure** from [PULL_REQUEST_TEMPLATE.md](https://github.com/Ansible-SaaS/.github/blob/main/.github/PULL_REQUEST_TEMPLATE.md).
+**The PR/MR body MUST continue to follow the template structure** from [PULL_REQUEST_TEMPLATE.md](https://github.com/Ansible-SaaS/.github/blob/main/.github/PULL_REQUEST_TEMPLATE.md).
 
-This ensures reviewers have a clear understanding of all changes in the PR without having to parse through individual commits.
+This ensures reviewers have a clear understanding of all changes without having to parse through individual commits.
 
-You can update the PR using the GitHub CLI:
+#### For GitLab (using glab):
 ```bash
-# Update PR title
-gh pr edit <PR-NUMBER> --title "Updated title reflecting all changes"
+# Update MR title
+glab mr update <MR-NUMBER> --title "Updated title reflecting all changes"
 
-# Update PR body (use a file for complex updates)
+# Update MR description (use a file for complex updates)
 # IMPORTANT: Maintain the template structure and include Assisted-by field
-gh pr edit <PR-NUMBER> --body "$(cat <<'EOF'
+glab mr update <MR-NUMBER> --description "$(cat <<'EOF'
 Jira Issue: <https://issues.redhat.com/browse/AAP-NNNN>
 
 ## Description
@@ -84,7 +166,7 @@ Jira Issue: <https://issues.redhat.com/browse/AAP-NNNN>
 
 ## Testing
 ### Steps to test
-1. Pull down the PR
+1. Pull down the MR
 2. ...
 
 ### Scenarios tested
@@ -102,7 +184,19 @@ EOF
 )"
 ```
 
-**IMPORTANT**: All PRs created with AI assistance MUST include the `Assisted-by:` field at the end of the PR description.
+#### For GitHub (using gh):
+```bash
+# Update PR title
+gh pr edit <PR-NUMBER> --title "Updated title reflecting all changes"
+
+# Update PR body (use a file for complex updates)
+gh pr edit <PR-NUMBER> --body "$(cat <<'EOF'
+...
+EOF
+)"
+```
+
+**IMPORTANT**: All PRs/MRs created with AI assistance MUST include the `Assisted-by:` field at the end of the description.
 
 ### Branch Naming Convention
 
@@ -127,178 +221,207 @@ When creating pull requests, the `Assisted-by: <name of code assistant>` field i
 
 ## JIRA
 
-Use the `jira` CLI to create new issue.
+### General Guidelines
 
-For each created issue, the priority must be set (Critical, Major, Normal, Minor ), if it is not provided, you must ask for it.
+**IMPORTANT**: ALL JIRA issue management operations (creating issues, updating fields, adding comments, linking PRs, etc.) MUST be performed using the JIRA REST API with curl commands. Do NOT use the `jira` CLI tool or web interface for automated operations, as these methods do not provide reliable visibility control and proper field validation.
 
-The workstream must be set to 'SaaS'.
+Required for each created issue:
+- **Priority**: Must be set (Critical, Major, Normal, Minor)
+- **Workstream**: Must be set to 'SaaS'
+- **Component**: Must be 'ansible-saas'
+- **Acceptance Criteria**: Mandatory custom field that must be set
+- **Visibility**: All issues MUST be restricted to "Red Hat Employee"
 
-The component must be 'ansible-saas'.
+**IMPORTANT**: All comments MUST be restricted to Red Hat employees using the API visibility controls.
 
-The custom field 'acceptance-criteria' is a mandatory field and so must be set.
-
-**IMPORTANT**: All issues MUST have their visibility restricted to "Red Hat Employee". Note: The `--custom security="Red Hat Employee"` flag is not currently supported by the jira CLI, so this must be set manually in the JIRA web interface after creation.
-
-**IMPORTANT**: All comments MUST be restricted to Red Hat employees using the `--internal` flag.
-
-**IMPORTANT**: For Bug type issues, the affected version MUST be set to "ansible-saas-ga" using `--affects-version ansible-saas-ga` (note: use `--affects-version` plural, NOT `--affected-version` or `--custom affected-version`).
+**IMPORTANT**: For Bug type issues, the affected version MUST be set to "ansible-saas-ga".
 
 ### Linking Pull Requests to JIRA Issues
 
-When a pull request is created for a JIRA issue, update the issue with the PR link using:
+When a pull request is created for a JIRA issue, update the issue with the PR link using the JIRA REST API:
 
 ```bash
-jira issue edit <ISSUE-KEY> --no-input --custom git-pull-request="<PR-URL>"
+# Link single PR to JIRA issue
+curl -X PUT "https://issues.redhat.com/rest/api/2/issue/AAP-12345" \
+  -H "Authorization: Bearer $JIRA_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "fields": {
+      "customfield_12310220": "https://github.com/Ansible-SaaS/ansible-saas-management-service/pull/552"
+    }
+  }'
 ```
 
-**IMPORTANT**: When adding multiple PRs to the same issue (e.g., code PR and documentation PR), the URLs must be **comma-separated** in a single command. Do NOT run the command multiple times as it will overwrite the previous value.
-
-Example with single PR:
-```bash
-jira issue edit AAP-57740 --no-input --custom git-pull-request="https://github.com/Ansible-SaaS/ansible-saas-sre/pull/1279"
-```
+**IMPORTANT**: When adding multiple PRs to the same issue (e.g., code PR and documentation PR), the URLs must be **comma-separated** in a single value. Do NOT run the command multiple times as it will overwrite the previous value.
 
 Example with multiple PRs (comma-separated):
 ```bash
-jira issue edit AAP-57911 --no-input --custom git-pull-request="https://github.com/Ansible-SaaS/ansible-saas-management-service/pull/552,https://github.com/Ansible-SaaS/ansible-saas-sops/pull/293"
+curl -X PUT "https://issues.redhat.com/rest/api/2/issue/AAP-12345" \
+  -H "Authorization: Bearer $JIRA_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "fields": {
+      "customfield_12310220": "https://github.com/Ansible-SaaS/ansible-saas-management-service/pull/552,https://github.com/Ansible-SaaS/ansible-saas-sops/pull/293"
+    }
+  }'
 ```
 
-**Workflow**: Always check if the issue already has a PR link before adding a new one. If it does, append the new PR URL with a comma separator.
+**Workflow**:
+1. First, fetch the current PR links (if any) using `GET /rest/api/2/issue/{key}`
+2. Append the new PR URL with a comma separator
+3. Update using `PUT /rest/api/2/issue/{key}`
 
-### Usage Examples
+**Note**: `customfield_12310220` is the "git-pull-request" field in Red Hat JIRA. This may vary for other JIRA instances.
 
-#### Custom Field Usage Example
+### Retrieving JIRA Issues
 
-When creating or editing issues, use the `--custom` flag with the field name in lowercase with dashes:
+To retrieve issue details including current field values:
 
 ```bash
-# Creating a simple issue (short body)
-jira issue create --type Story --project AAP --parent AAP-12345 \
-  --priority Major \
-  --summary "Issue summary" \
-  --component ansible-saas \
-  --custom workstream=SaaS \
-  --custom security="Red Hat Employee" \
-  --custom acceptance-criteria="- First acceptance criterion
-- Second acceptance criterion
-- Third acceptance criterion" \
-  --body "h3. *User Story*
-..."
+curl -s -X GET "https://issues.redhat.com/rest/api/2/issue/AAP-59069" \
+  -H "Authorization: Bearer $JIRA_API_TOKEN" \
+  -H "Content-Type: application/json"
+```
 
-# RECOMMENDED: Creating an issue with complex JIRA markup using --template
-# This approach is more reliable and avoids timeout issues with complex body text
-cat > /tmp/issue-body.txt << 'EOF'
-*Description*
+This is useful for:
+- Checking current PR links before updating
+- Verifying field values
+- Retrieving issue status and details
 
-This is the issue description with JIRA markup.
+### Creating Issues with JIRA REST API
 
-*Steps to Reproduce*
+#### Creating a Bug
 
-1. Step one
-2. Step two
+**IMPORTANT**:
+- For Bug type issues, the affected version MUST be set to "ansible-saas-ga"
+- Bugs do NOT use the Workstream field (customfield_12310940) - that field is for Stories only
+- To link a bug to an epic, include `customfield_12311140` with the epic key
 
-{code:bash}
-example command
-{code}
+```bash
+curl -X POST "https://issues.redhat.com/rest/api/2/issue" \
+  -H "Authorization: Bearer $JIRA_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "fields": {
+      "project": {"key": "AAP"},
+      "issuetype": {"name": "Bug"},
+      "summary": "Issue summary",
+      "priority": {"name": "Major"},
+      "components": [{"name": "ansible-saas"}],
+      "customfield_12315940": "- First acceptance criterion\n- Second acceptance criterion",
+      "customfield_12311140": "AAP-12345",
+      "versions": [{"name": "ansible-saas-ga"}],
+      "description": "*Description*\n\nWhat is happening\n\n*Steps to Reproduce*\n\n1. Step one\n2. Step two\n\n*Expected Behavior*\n\nWhat should happen"
+    }
+  }'
+```
 
-*Expected Behavior*
+**Note**: To link to an epic, include the `customfield_12311140` field in the initial creation (as shown above). You can also add it later with a PUT request if needed.
 
-What should happen
-EOF
-jira issue create --type Bug --project AAP \
-  --priority Major \
-  --summary "Issue summary" \
-  --component ansible-saas \
-  --custom workstream=SaaS \
-  --custom acceptance-criteria="- Acceptance criterion" \
-  --affects-version ansible-saas-ga \
-  --template /tmp/issue-body.txt \
-  --no-input
+#### Creating a Story
 
-# Editing an existing issue to set acceptance criteria
-jira issue edit AAP-12345 --no-input \
-  --custom acceptance-criteria="- Updated criterion 1
-- Updated criterion 2"
+```bash
+curl -X POST "https://issues.redhat.com/rest/api/2/issue" \
+  -H "Authorization: Bearer $JIRA_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "fields": {
+      "project": {"key": "AAP"},
+      "issuetype": {"name": "Story"},
+      "summary": "Story summary",
+      "priority": {"name": "Major"},
+      "components": [{"name": "ansible-saas"}],
+      "customfield_12311140": "AAP-12345",
+      "customfield_12319275": [{"value": "SaaS"}],
+      "customfield_12315940": "- Acceptance criterion 1\n- Acceptance criterion 2",
+      "description": "h3. *User Story*\n\nAs a user I want to...\n\nh3. *Supporting documentation*\n\nLinks to docs..."
+    }
+  }'
 ```
 
 **Important Notes:**
-- For issue bodies with complex JIRA markup or multiple lines, use the `--template` file approach
-- The `--template` approach is more reliable than inline `--body` for complex content
-- Simple, short bodies can still use inline `--body "..."`
-- Always test by viewing the created issue: `jira issue view AAP-XXXXX`
+- `customfield_12311140` is the "Epic Link" field (string value of epic key, e.g., "AAP-12345")
+- `customfield_12319275` is the "Workstream" field (array of objects with value, e.g., `[{"value": "SaaS"}]`)
+- `customfield_12315940` is the "Acceptance Criteria" field (text with JIRA markup)
+- After creation, you MUST manually set visibility to "Red Hat Employee" in the JIRA web interface
+- **DO NOT use "parent" field** - use customfield_12311140 for epic linking
+- Use `\n` for newlines in description field
+- Always verify the created issue in JIRA web interface
 
 #### Adding Comments to JIRA Issues
 
-To add a comment to an existing JIRA issue, use the `jira issue comment add` command with the `--internal` flag to restrict visibility to Red Hat employees:
+**IMPORTANT**: All comments MUST be restricted to Red Hat employees. Always use the JIRA REST API with visibility set to `"type": "group"`, `"value": "Red Hat Employee"`.
 
 ```bash
-# Simple comment with internal flag (REQUIRED)
-jira issue comment add AAP-12345 "This is a simple comment" --internal
+# Simple comment
+curl -X POST "https://issues.redhat.com/rest/api/2/issue/AAP-12345/comment" \
+  -H "Authorization: Bearer $JIRA_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "body": "Your comment text here",
+    "visibility": {
+      "type": "group",
+      "value": "Red Hat Employee"
+    }
+  }'
 
-# RECOMMENDED: Using a template file for complex/long comments with JIRA markup
-# This approach is more reliable and avoids timeout issues
-cat > /tmp/comment.txt << 'EOF'
-h3. Section Header
-
-Content of the comment with {{inline code}}.
-
-{code:bash}
-code block example
-{code}
-
-* Bullet points
-* Work well too
+# Long comment with JIRA markup (use a file)
+cat > /tmp/comment.json << 'EOF'
+{
+  "body": "h3. Section Header\n\nContent with {{inline code}}.\n\n{code:bash}\ncode example\n{code}\n\n* Bullet points\n* Work well",
+  "visibility": {
+    "type": "group",
+    "value": "Red Hat Employee"
+  }
+}
 EOF
-jira issue comment add AAP-12345 --template /tmp/comment.txt --internal --no-input
-
-# AVOID: Heredoc with command substitution for long comments (can timeout)
-# This may work for short comments but often times out with complex JIRA markup
-jira issue comment add AAP-12345 "$(cat <<'EOF'
-This is a multi-line comment.
-It can contain multiple paragraphs.
-EOF
-)" --internal
+curl -X POST "https://issues.redhat.com/rest/api/2/issue/AAP-12345/comment" \
+  -H "Authorization: Bearer $JIRA_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d @/tmp/comment.json
 ```
 
 **Important Notes:**
-- Use JIRA markup syntax in comments (e.g., `*bold*`, `_italic_`, `{code:java}...{code}`, `h3.` for headers)
-- **For comments with JIRA markup or longer than a few lines, ALWAYS use the `--template` file approach**
-- Heredoc comments with complex JIRA markup frequently timeout (3+ minutes)
-- File-based comments complete successfully and quickly
+- Use JIRA markup syntax in comments (e.g., `*bold*`, `_italic*`, `{code:java}...{code}`, `h3.` for headers)
+- In API calls, use `\n` for newlines in the body field
+- The `visibility` object with `"type": "group"` and `"value": "Red Hat Employee"` properly restricts access
+- Requires `JIRA_API_TOKEN` environment variable to be set
+- Always verify comment visibility in JIRA web interface (should show "Internal" badge)
 
 #### Updating Issue Descriptions
 
-When updating the description field of an existing JIRA issue, you MUST use a heredoc with command substitution to avoid formatting issues:
+When updating the description field of an existing JIRA issue, use the JIRA REST API:
 
 ```bash
-# CORRECT: Use heredoc with command substitution
-jira issue edit AAP-12345 --no-input -b "$(cat <<'EOFBODY'
-h2. Section Header
+# Update issue description with JIRA markup
+curl -X PUT "https://issues.redhat.com/rest/api/2/issue/AAP-12345" \
+  -H "Authorization: Bearer $JIRA_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "fields": {
+      "description": "h2. Section Header\n\nContent goes here...\n\nh3. Subsection\n\nMore content with {{inline code}} and formatting.\n\n{code:bash}\ncode block example\n{code}"
+    }
+  }'
 
-Content goes here...
-
-h3. Subsection
-
-More content with {{inline code}} and formatting.
-
-{code:bash}
-code block example
-{code}
-EOFBODY
-)"
-
-# INCORRECT: Piping from stdin often fails with complex formatting
-cat /tmp/description.txt | jira issue edit AAP-12345 -b - --no-input
-
-# INCORRECT: Using -b - with stdin can result in malformed descriptions
-echo "content" | jira issue edit AAP-12345 --no-input -b -
+# For long descriptions, use a file
+cat > /tmp/update.json << 'EOF'
+{
+  "fields": {
+    "description": "h2. Section Header\n\nVery long content...\n\n{code:bash}\nexample\n{code}"
+  }
+}
+EOF
+curl -X PUT "https://issues.redhat.com/rest/api/2/issue/AAP-12345" \
+  -H "Authorization: Bearer $JIRA_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d @/tmp/update.json
 ```
 
 **Important Notes:**
-- Always use single quotes in `<<'EOFBODY'` to prevent shell variable expansion
-- The heredoc must be wrapped in `"$(cat <<'EOFBODY' ... EOFBODY)"` for proper formatting
-- Test the result by viewing the issue after update: `jira issue view AAP-12345`
-- For very long descriptions, the heredoc approach is more reliable than stdin piping
+- Use `\n` for newlines in the description field
+- JIRA markup works the same as in comments
+- Test the result by viewing the issue in JIRA web interface
+- Use PUT to update specific fields without affecting others
 
 ### Templates
 
