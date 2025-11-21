@@ -243,6 +243,23 @@ When creating pull requests, the `Assisted-by: <name of code assistant>` field i
 
 **IMPORTANT**: ALL JIRA issue management operations (creating issues, updating fields, adding comments, linking PRs, etc.) MUST be performed using the JIRA REST API with curl commands. Do NOT use the `jira` CLI tool or web interface for automated operations, as these methods do not provide reliable visibility control and proper field validation.
 
+### Environment Variables
+
+**Required environment variables for JIRA API access:**
+- `JIRA_API_TOKEN`: Your JIRA API token (Personal Access Token)
+- `JIRA_AUTH_TYPE`: Authentication type, must be set to `bearer` for API token authentication
+
+**Example:**
+```bash
+export JIRA_API_TOKEN="your-api-token-here"
+export JIRA_AUTH_TYPE="bearer"
+```
+
+**IMPORTANT**: All JIRA curl commands MUST use the authorization header format based on `JIRA_AUTH_TYPE`. When `JIRA_AUTH_TYPE=bearer`, use:
+```bash
+-H "Authorization: Bearer $JIRA_API_TOKEN"
+```
+
 Required for each created issue:
 - **Priority**: Must be set (Critical, Major, Normal, Minor)
 - **Workstream**: Must be set to 'SaaS'
