@@ -183,6 +183,11 @@ curl -X PUT "https://issues.redhat.com/rest/api/2/issue/AAP-12345" \
 
 #### Creating a Bug
 
+**IMPORTANT**:
+- For Bug type issues, the affected version MUST be set to "ansible-saas-ga"
+- Bugs do NOT use the Workstream field (customfield_12310940) - that field is for Stories only
+- To link a bug to an epic, include `customfield_12311140` with the epic key
+
 ```bash
 curl -X POST "https://issues.redhat.com/rest/api/2/issue" \
   -H "Authorization: Bearer $JIRA_API_TOKEN" \
@@ -194,13 +199,15 @@ curl -X POST "https://issues.redhat.com/rest/api/2/issue" \
       "summary": "Issue summary",
       "priority": {"name": "Major"},
       "components": [{"name": "ansible-saas"}],
-      "customfield_12311140": "- First acceptance criterion\n- Second acceptance criterion",
-      "customfield_12310940": "SaaS",
+      "customfield_12315940": "- First acceptance criterion\n- Second acceptance criterion",
+      "customfield_12311140": "AAP-12345",
       "versions": [{"name": "ansible-saas-ga"}],
       "description": "*Description*\n\nWhat is happening\n\n*Steps to Reproduce*\n\n1. Step one\n2. Step two\n\n*Expected Behavior*\n\nWhat should happen"
     }
   }'
 ```
+
+**Note**: To link to an epic, include the `customfield_12311140` field in the initial creation (as shown above). You can also add it later with a PUT request if needed.
 
 #### Creating a Story
 
