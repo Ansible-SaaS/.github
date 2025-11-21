@@ -241,7 +241,18 @@ When creating pull requests, the `Assisted-by: <name of code assistant>` field i
 
 ### General Guidelines
 
-**IMPORTANT**: ALL JIRA issue management operations (creating issues, updating fields, adding comments, linking PRs, etc.) MUST be performed using the JIRA REST API with curl commands. Do NOT use the `jira` CLI tool or web interface for automated operations, as these methods do not provide reliable visibility control and proper field validation.
+**IMPORTANT**: ALL JIRA issue management operations (creating issues, updating fields, adding comments, linking PRs, etc.) MUST be performed using the JIRA REST API with curl commands.
+
+**DO NOT USE THE `jira` CLI TOOL** - The `jira` CLI tool must NEVER be used for automated operations because:
+- It does not provide reliable visibility control (cannot guarantee "Red Hat Employee" restriction)
+- It does not properly validate required custom fields
+- It does not support all custom field types properly
+- It can create issues that are publicly visible by default
+- Error handling and validation are inconsistent
+
+**DO NOT USE** the JIRA web interface for automated operations - it is for manual use only.
+
+**ALWAYS USE** the JIRA REST API with curl commands as documented below.
 
 ### Environment Variables
 
