@@ -75,25 +75,43 @@ git remote -v
 
 **Creating a Merge Request:**
 ```bash
-glab mr create --draft --title "Title" --description "$(cat <<'EOF'
-Jira Issue: <https://issues.redhat.com/browse/AAP-NNNN>
+glab mr create --draft --title "Your MR Title" --description "$(cat <<'EOF'
+Jira Issue: https://issues.redhat.com/browse/AAP-NNNN
 
 ## Description
-...
+
+[Describe your changes here]
+
+Assisted-by: Claude (Anthropic)
 
 ## Testing
-...
+
+### Steps to test
+1. Pull down the PR
+2. [Add specific test steps]
+3. [Additional steps]
+
+### Scenarios tested
+- [ ] Test scenario 1
+- [ ] Test scenario 2
 
 ## Deployment considerations
-...
+- [ ] This code change is ready for deployment on its own
+- [ ] This code change requires the following considerations before being deployed:
 
----
 🤖 Generated with [Claude Code](https://claude.com/claude-code)
 
-Assisted-by: Claude
+Co-Authored-By: Claude <noreply@anthropic.com>
 EOF
 )"
 ```
+
+**Important Notes:**
+- Always use the template format shown above (from https://github.com/Ansible-SaaS/.github/blob/main/.github/PULL_REQUEST_TEMPLATE.md)
+- Do NOT use `--fill` flag together with `--title` and `--description` (they are mutually exclusive in glab)
+- For internal tooling improvements without a JIRA ticket, use "Jira Issue: N/A (Internal tooling improvement)"
+- Always include "Assisted-by: Claude (Anthropic)" when AI assistance is used
+- The MR body must follow the template structure
 
 **Note**: To create a personal access token for GitLab:
 1. Go to GitLab Settings > Access Tokens
@@ -294,7 +312,7 @@ This is useful for:
 
 **IMPORTANT**:
 - For Bug type issues, the affected version MUST be set to "ansible-saas-ga"
-- Bugs do NOT use the Workstream field (customfield_12310940) - that field is for Stories only
+- Bugs MUST have Workstream set to "SaaS" using `customfield_12319275`
 - To link a bug to an epic, include `customfield_12311140` with the epic key
 
 ```bash
@@ -308,6 +326,7 @@ curl -X POST "https://issues.redhat.com/rest/api/2/issue" \
       "summary": "Issue summary",
       "priority": {"name": "Major"},
       "components": [{"name": "ansible-saas"}],
+      "customfield_12319275": [{"value": "SaaS"}],
       "customfield_12315940": "- First acceptance criterion\n- Second acceptance criterion",
       "customfield_12311140": "AAP-12345",
       "versions": [{"name": "ansible-saas-ga"}],
@@ -512,4 +531,57 @@ h3. *Supporting documentation*
 The following Standard Operating Procedures (SOPs) documentation provides important information about the Ansible SaaS platform:
 
 [Ansible-SaaS SOPS Index](https://github.com/Ansible-SaaS/ansible-saas-sops/blob/main/README.md)
+
+## Fetching Files from Private GitHub Repositories
+
+**IMPORTANT**: When you need to fetch files from private GitHub repositories (such as this AGENT.md file or other documentation), you MUST use the GitHub REST API with authentication via the `GITHUB_TOKEN` environment variable.
+
+### Using GitHub REST API to Fetch File Contents
+
+The `GITHUB_TOKEN` environment variable should be set with a valid GitHub Personal Access Token that has access to private repositories.
+
+**To fetch raw file contents:**
+
+```bash
+curl -H "Accept: application/vnd.github.raw" \
+  -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+  -H "X-GitHub-Api-Version: 2022-11-28" \
+  "https://api.github.com/repos/{OWNER}/{REPO}/contents/{PATH}"
+```
+
+**Example - Fetching this AGENT.md file:**
+
+```bash
+curl -H "Accept: application/vnd.github.raw" \
+  -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+  -H "X-GitHub-Api-Version: 2022-11-28" \
+  "https://api.github.com/repos/Ansible-SaaS/.github/contents/AGENT.md"
+```
+
+**Example - Fetching a project-specific AGENT.md:**
+
+```bash
+curl -H "Accept: application/vnd.github.raw" \
+  -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+  -H "X-GitHub-Api-Version: 2022-11-28" \
+  "https://api.github.com/repos/Ansible-SaaS/ansible-saas-management-service/contents/AGENT.md"
+```
+
+**Important Notes:**
+- The `Accept: application/vnd.github.raw` header returns the raw file content directly (not base64 encoded)
+- Always use the `Authorization: Bearer ${GITHUB_TOKEN}` header for private repositories
+- The API endpoint format is: `/repos/{owner}/{repo}/contents/{path}`
+- For files in subdirectories, include the full path (e.g., `docs/architecture/README.md`)
+- Do NOT use blob URLs (e.g., `https://github.com/.../blob/main/...`) as they return HTML, not file content
+- If `GITHUB_TOKEN` is not set or invalid, you will receive a 401 Unauthorized or 404 Not Found error
+
+### When to Use This Method
+
+Use the GitHub REST API to fetch files when:
+1. Reading referenced documentation from other private repositories
+2. Retrieving templates or configuration files from organization repositories
+3. Accessing files that are referenced in project-specific AGENT.md files
+4. Any automated operation that needs to read files from private GitHub repositories
+
+**Do NOT** use this for public repositories where direct URL fetching would work without authentication.
 
