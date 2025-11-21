@@ -211,22 +211,24 @@ curl -X POST "https://issues.redhat.com/rest/api/2/issue" \
   -d '{
     "fields": {
       "project": {"key": "AAP"},
-      "parent": {"key": "AAP-12345"},
       "issuetype": {"name": "Story"},
       "summary": "Story summary",
       "priority": {"name": "Major"},
       "components": [{"name": "ansible-saas"}],
-      "customfield_12311140": "- Acceptance criterion 1\n- Acceptance criterion 2",
-      "customfield_12310940": "SaaS",
+      "customfield_12311140": "AAP-12345",
+      "customfield_12319275": [{"value": "SaaS"}],
+      "customfield_12315940": "- Acceptance criterion 1\n- Acceptance criterion 2",
       "description": "h3. *User Story*\n\nAs a user I want to...\n\nh3. *Supporting documentation*\n\nLinks to docs..."
     }
   }'
 ```
 
 **Important Notes:**
-- `customfield_12311140` is the "acceptance-criteria" field
-- `customfield_12310940` is the "workstream" field
+- `customfield_12311140` is the "Epic Link" field (string value of epic key, e.g., "AAP-12345")
+- `customfield_12319275` is the "Workstream" field (array of objects with value, e.g., `[{"value": "SaaS"}]`)
+- `customfield_12315940` is the "Acceptance Criteria" field (text with JIRA markup)
 - After creation, you MUST manually set visibility to "Red Hat Employee" in the JIRA web interface
+- **DO NOT use "parent" field** - use customfield_12311140 for epic linking
 - Use `\n` for newlines in description field
 - Always verify the created issue in JIRA web interface
 
