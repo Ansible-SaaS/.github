@@ -258,17 +258,17 @@ When creating pull requests, the `Assisted-by: <name of code assistant>` field i
 
 **Required environment variables for JIRA API access:**
 - `JIRA_API_TOKEN`: Your JIRA API token (Personal Access Token)
-- `JIRA_AUTH_TYPE`: Authentication type, must be set to `bearer` for API token authentication
+- `JIRA_AUTH_TYPE`: Authentication type, must be set to `Bearer` for API token authentication
 
 **Example:**
 ```bash
 export JIRA_API_TOKEN="your-api-token-here"
-export JIRA_AUTH_TYPE="bearer"
+export JIRA_AUTH_TYPE="Bearer"
 ```
 
-**IMPORTANT**: All JIRA curl commands MUST use the authorization header format based on `JIRA_AUTH_TYPE`. When `JIRA_AUTH_TYPE=bearer`, use:
+**IMPORTANT**: All JIRA curl commands MUST use the authorization header format based on `JIRA_AUTH_TYPE`. When `JIRA_AUTH_TYPE=Bearer`, use:
 ```bash
--H "Authorization: Bearer $JIRA_API_TOKEN"
+-H "Authorization: $JIRA_AUTH_TYPE $JIRA_API_TOKEN"
 ```
 
 Required for each created issue:
@@ -289,7 +289,7 @@ When a pull request is created for a JIRA issue, update the issue with the PR li
 ```bash
 # Link single PR to JIRA issue
 curl -X PUT "https://issues.redhat.com/rest/api/2/issue/AAP-12345" \
-  -H "Authorization: Bearer $JIRA_API_TOKEN" \
+  -H "Authorization: $JIRA_AUTH_TYPE $JIRA_API_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
     "fields": {
@@ -303,7 +303,7 @@ curl -X PUT "https://issues.redhat.com/rest/api/2/issue/AAP-12345" \
 Example with multiple PRs (comma-separated):
 ```bash
 curl -X PUT "https://issues.redhat.com/rest/api/2/issue/AAP-12345" \
-  -H "Authorization: Bearer $JIRA_API_TOKEN" \
+  -H "Authorization: $JIRA_AUTH_TYPE $JIRA_API_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
     "fields": {
@@ -325,7 +325,7 @@ To retrieve issue details including current field values:
 
 ```bash
 curl -s -X GET "https://issues.redhat.com/rest/api/2/issue/AAP-59069" \
-  -H "Authorization: Bearer $JIRA_API_TOKEN" \
+  -H "Authorization: $JIRA_AUTH_TYPE $JIRA_API_TOKEN" \
   -H "Content-Type: application/json"
 ```
 
@@ -345,7 +345,7 @@ This is useful for:
 
 ```bash
 curl -X POST "https://issues.redhat.com/rest/api/2/issue" \
-  -H "Authorization: Bearer $JIRA_API_TOKEN" \
+  -H "Authorization: $JIRA_AUTH_TYPE $JIRA_API_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
     "fields": {
@@ -369,7 +369,7 @@ curl -X POST "https://issues.redhat.com/rest/api/2/issue" \
 
 ```bash
 curl -X POST "https://issues.redhat.com/rest/api/2/issue" \
-  -H "Authorization: Bearer $JIRA_API_TOKEN" \
+  -H "Authorization: $JIRA_AUTH_TYPE $JIRA_API_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
     "fields": {
@@ -402,7 +402,7 @@ curl -X POST "https://issues.redhat.com/rest/api/2/issue" \
 ```bash
 # Simple comment
 curl -X POST "https://issues.redhat.com/rest/api/2/issue/AAP-12345/comment" \
-  -H "Authorization: Bearer $JIRA_API_TOKEN" \
+  -H "Authorization: $JIRA_AUTH_TYPE $JIRA_API_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
     "body": "Your comment text here",
@@ -423,7 +423,7 @@ cat > /tmp/comment.json << 'EOF'
 }
 EOF
 curl -X POST "https://issues.redhat.com/rest/api/2/issue/AAP-12345/comment" \
-  -H "Authorization: Bearer $JIRA_API_TOKEN" \
+  -H "Authorization: $JIRA_AUTH_TYPE $JIRA_API_TOKEN" \
   -H "Content-Type: application/json" \
   -d @/tmp/comment.json
 ```
@@ -442,7 +442,7 @@ When updating the description field of an existing JIRA issue, use the JIRA REST
 ```bash
 # Update issue description with JIRA markup
 curl -X PUT "https://issues.redhat.com/rest/api/2/issue/AAP-12345" \
-  -H "Authorization: Bearer $JIRA_API_TOKEN" \
+  -H "Authorization: $JIRA_AUTH_TYPE $JIRA_API_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
     "fields": {
@@ -459,7 +459,7 @@ cat > /tmp/update.json << 'EOF'
 }
 EOF
 curl -X PUT "https://issues.redhat.com/rest/api/2/issue/AAP-12345" \
-  -H "Authorization: Bearer $JIRA_API_TOKEN" \
+  -H "Authorization: $JIRA_AUTH_TYPE $JIRA_API_TOKEN" \
   -H "Content-Type: application/json" \
   -d @/tmp/update.json
 ```
