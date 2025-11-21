@@ -202,7 +202,7 @@ When creating pull requests, the `Assisted-by: <name of code assistant>` field i
 
 ### General Guidelines
 
-**IMPORTANT**: Use the JIRA REST API (curl) for ALL JIRA operations to ensure proper visibility control and reliability.
+**IMPORTANT**: ALL JIRA issue management operations (creating issues, updating fields, adding comments, linking PRs, etc.) MUST be performed using the JIRA REST API with curl commands. Do NOT use the `jira` CLI tool or web interface for automated operations, as these methods do not provide reliable visibility control and proper field validation.
 
 Required for each created issue:
 - **Priority**: Must be set (Critical, Major, Normal, Minor)
@@ -251,6 +251,21 @@ curl -X PUT "https://issues.redhat.com/rest/api/2/issue/AAP-12345" \
 3. Update using `PUT /rest/api/2/issue/{key}`
 
 **Note**: `customfield_12310220` is the "git-pull-request" field in Red Hat JIRA. This may vary for other JIRA instances.
+
+### Retrieving JIRA Issues
+
+To retrieve issue details including current field values:
+
+```bash
+curl -s -X GET "https://issues.redhat.com/rest/api/2/issue/AAP-59069" \
+  -H "Authorization: Bearer $JIRA_API_TOKEN" \
+  -H "Content-Type: application/json"
+```
+
+This is useful for:
+- Checking current PR links before updating
+- Verifying field values
+- Retrieving issue status and details
 
 ### Creating Issues with JIRA REST API
 
