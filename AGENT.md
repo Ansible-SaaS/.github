@@ -76,7 +76,7 @@ git remote -v
 **Creating a Merge Request:**
 ```bash
 glab mr create --draft --title "Your MR Title" --description "$(cat <<'EOF'
-Jira Issue: https://issues.redhat.com/browse/AAP-NNNN
+Jira Issue: https://redhat.atlassian.net/browse/AAP-NNNN
 
 ## Description
 
@@ -173,7 +173,7 @@ glab mr update <MR-NUMBER> --title "Updated title reflecting all changes"
 # Update MR description (use a file for complex updates)
 # IMPORTANT: Maintain the template structure and include Assisted-by field
 glab mr update <MR-NUMBER> --description "$(cat <<'EOF'
-Jira Issue: <https://issues.redhat.com/browse/AAP-NNNN>
+Jira Issue: <https://redhat.atlassian.net/browse/AAP-NNNN>
 
 ## Description
 - Added: New validation for instance names
@@ -288,7 +288,7 @@ When a pull request is created for a JIRA issue, update the issue with the PR li
 
 ```bash
 # Link single PR to JIRA issue
-curl -X PUT "https://issues.redhat.com/rest/api/2/issue/AAP-12345" \
+curl -X PUT "https://redhat.atlassian.net/rest/api/3/issue/AAP-12345" \
   -H "Authorization: $JIRA_AUTH_TYPE $JIRA_API_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -302,7 +302,7 @@ curl -X PUT "https://issues.redhat.com/rest/api/2/issue/AAP-12345" \
 
 Example with multiple PRs (comma-separated):
 ```bash
-curl -X PUT "https://issues.redhat.com/rest/api/2/issue/AAP-12345" \
+curl -X PUT "https://redhat.atlassian.net/rest/api/3/issue/AAP-12345" \
   -H "Authorization: $JIRA_AUTH_TYPE $JIRA_API_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -313,9 +313,9 @@ curl -X PUT "https://issues.redhat.com/rest/api/2/issue/AAP-12345" \
 ```
 
 **Workflow**:
-1. First, fetch the current PR links (if any) using `GET /rest/api/2/issue/{key}`
+1. First, fetch the current PR links (if any) using `GET /rest/api/3/issue/{key}`
 2. Append the new PR URL with a comma separator
-3. Update using `PUT /rest/api/2/issue/{key}`
+3. Update using `PUT /rest/api/3/issue/{key}`
 
 **Note**: `customfield_12310220` is the "git-pull-request" field in Red Hat JIRA. This may vary for other JIRA instances.
 
@@ -324,7 +324,7 @@ curl -X PUT "https://issues.redhat.com/rest/api/2/issue/AAP-12345" \
 To retrieve issue details including current field values:
 
 ```bash
-curl -s -X GET "https://issues.redhat.com/rest/api/2/issue/AAP-59069" \
+curl -s -X GET "https://redhat.atlassian.net/rest/api/3/issue/AAP-59069" \
   -H "Authorization: $JIRA_AUTH_TYPE $JIRA_API_TOKEN" \
   -H "Content-Type: application/json"
 ```
@@ -344,7 +344,7 @@ This is useful for:
 - To link a bug to an epic, include `customfield_12311140` with the epic key
 
 ```bash
-curl -X POST "https://issues.redhat.com/rest/api/2/issue" \
+curl -X POST "https://redhat.atlassian.net/rest/api/3/issue" \
   -H "Authorization: $JIRA_AUTH_TYPE $JIRA_API_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -368,7 +368,7 @@ curl -X POST "https://issues.redhat.com/rest/api/2/issue" \
 #### Creating a Story
 
 ```bash
-curl -X POST "https://issues.redhat.com/rest/api/2/issue" \
+curl -X POST "https://redhat.atlassian.net/rest/api/3/issue" \
   -H "Authorization: $JIRA_AUTH_TYPE $JIRA_API_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -401,7 +401,7 @@ curl -X POST "https://issues.redhat.com/rest/api/2/issue" \
 
 ```bash
 # Simple comment
-curl -X POST "https://issues.redhat.com/rest/api/2/issue/AAP-12345/comment" \
+curl -X POST "https://redhat.atlassian.net/rest/api/3/issue/AAP-12345/comment" \
   -H "Authorization: $JIRA_AUTH_TYPE $JIRA_API_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -422,7 +422,7 @@ cat > /tmp/comment.json << 'EOF'
   }
 }
 EOF
-curl -X POST "https://issues.redhat.com/rest/api/2/issue/AAP-12345/comment" \
+curl -X POST "https://redhat.atlassian.net/rest/api/3/issue/AAP-12345/comment" \
   -H "Authorization: $JIRA_AUTH_TYPE $JIRA_API_TOKEN" \
   -H "Content-Type: application/json" \
   -d @/tmp/comment.json
@@ -441,7 +441,7 @@ When updating the description field of an existing JIRA issue, use the JIRA REST
 
 ```bash
 # Update issue description with JIRA markup
-curl -X PUT "https://issues.redhat.com/rest/api/2/issue/AAP-12345" \
+curl -X PUT "https://redhat.atlassian.net/rest/api/3/issue/AAP-12345" \
   -H "Authorization: $JIRA_AUTH_TYPE $JIRA_API_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -458,7 +458,7 @@ cat > /tmp/update.json << 'EOF'
   }
 }
 EOF
-curl -X PUT "https://issues.redhat.com/rest/api/2/issue/AAP-12345" \
+curl -X PUT "https://redhat.atlassian.net/rest/api/3/issue/AAP-12345" \
   -H "Authorization: $JIRA_AUTH_TYPE $JIRA_API_TOKEN" \
   -H "Content-Type: application/json" \
   -d @/tmp/update.json
